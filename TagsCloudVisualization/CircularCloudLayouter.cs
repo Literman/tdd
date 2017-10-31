@@ -9,11 +9,13 @@ namespace TagsCloudVisualization
     {
         private readonly Point center;
         private readonly List<Rectangle> rectangles;
+        private readonly IEnumerator<Point> centers;
 
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
             rectangles = new List<Rectangle>();
+            centers = GetCenter().GetEnumerator();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -28,23 +30,26 @@ namespace TagsCloudVisualization
 
         private Rectangle GetRectangle(Size rectangleSize)
         {
-            var rnd = new Random();
-            for (var radius = 0; ; radius++)
+            Rectangle rectangle;
+            do
             {
-                //double i = 0; i < 2 * Math.PI; i += Math.PI / 30
-                for (var i = rnd.Next(360); i < 360; i += 1) //todo +=1
-                {
-                    var rad = i / Math.PI * 180;
-                    var newCenter = center + new Size((int)(radius * Math.Cos(i)), (int)(radius * Math.Sin(i)));
-                    var rectangle = new Rectangle(newCenter - GetHalfSize(rectangleSize), rectangleSize);
+                centers.MoveNext();
+                var newCenter = centers.Current - GetHalfSize(rectangleSize);
+                rectangle = new Rectangle(newCenter, rectangleSize);
+            } while (IsColision(rectangle));
 
-                    if (!rectangles.Any(r => r.IntersectsWith(rectangle)))
-                        return rectangle;
-                }
-            }
+            return rectangle;
         }
 
-        private bool Colision(Rectangle rectangle) => 
+        private IEnumerable<Point> GetCenter()
+        {
+            for (var radius = 0; ; radius++)
+                for (var i = 0.0; i < 2 * Math.PI; i += Math.PI / 180)
+                    yield return center + new Size(
+                                     (int)(radius * Math.Cos(i)), (int)(radius * Math.Sin(i)));
+        }
+
+        private bool IsColision(Rectangle rectangle) => 
             rectangles.Any(r => r.IntersectsWith(rectangle));
 
         private static Size GetHalfSize(Size size) => new Size(size.Width / 2, size.Height / 2);

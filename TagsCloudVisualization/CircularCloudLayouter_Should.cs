@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
@@ -42,18 +43,10 @@ namespace TagsCloudVisualization
                 .ShouldBeEquivalentTo(new Rectangle(x - width / 2, y - height / 2, width, height));
         }
 
-        //[Test]
-        //public void ReturnCorrectRectangle_AfterSomePutting()
-        //{
-        //    cloud.PutNextRectangle(new Size(10, 10));
-        //    cloud.PutNextRectangle(new Size(10, 10))
-        //        .ShouldBeEquivalentTo(new Rectangle(-15, -1, 10, 10));
-        //}
-
-        [TestCase(2, 10, 10, TestName = "2 rectangles")]
-        [TestCase(50, 20, 10, TestName = "50 rectangles")]
-        [TestCase(100, 10, 20, TestName = "100 rectangles")]
-        [TestCase(200, 30, 10, TestName = "200 rectangles"), Timeout(2500)]
+        [TestCase(10, 10, 10, TestName = "10 rectangles")]
+        [TestCase(100, 20, 10, TestName = "100 rectangles")]
+        [TestCase(1000, 30, 10, TestName = "1000 rectangles")]
+        [TestCase(3000, 10, 20, TestName = "3000 rectangles"), Timeout(4000)]
         public void ReturnFalseIntersaction_AfterPutting(int count, int width, int height)
         {
             var rectangles = new List<Rectangle>();
@@ -66,5 +59,19 @@ namespace TagsCloudVisualization
                 for (var j = i + 1; j < count; j++)
                     rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
         }
+
+        //[TearDown]
+        //public void TearDown()
+        //{
+        //    var context = TestContext.CurrentContext;
+
+        //    if (context.Result.Outcome.Status == TestStatus.Failed)
+        //    {
+        //        var path = $@"{context.TestDirectory}\{context.Test.Name}.bmp";
+
+        //        //CloudDrawer.Draw(path, Point.Empty, rectangles);
+        //        Console.WriteLine("Tag cloud visualization saved to file " + path);
+        //    }
+        //}
     }
 }
