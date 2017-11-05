@@ -4,9 +4,9 @@ using System.Windows.Forms;
 
 namespace TagsCloudVisualization
 {
-    public static class CloudDrawer
+    public static class CircularCloudDrawer
     {
-        public static void Draw(string path, Point center, List<Rectangle> rectangles, int width, int height)
+        public static void Draw(Point center, List<Rectangle> rectangles, int width, int height)
         {
             using (var bitmap = new Bitmap(width, height))
             {
@@ -18,6 +18,20 @@ namespace TagsCloudVisualization
                     BackgroundImage = bitmap
                 };
                 form.ShowDialog();
+            }
+        }
+
+        public static void Draw(string path, Point center, List<Rectangle> rectangles, int width, int height)
+        {
+            Draw(center, rectangles, width, height);
+            Save(path, center, rectangles, width, height);
+        }
+
+        public static void Save(string path, Point center, List<Rectangle> rectangles, int width = 800, int height = 800)
+        {
+            using (var bitmap = new Bitmap(width, height))
+            {
+                Draw(center, rectangles, bitmap);
                 bitmap.Save(path);
             }
         }

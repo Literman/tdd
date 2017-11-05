@@ -49,7 +49,7 @@ namespace TagsCloudVisualization
                                      (int)(radius * Math.Cos(i)), (int)(radius * Math.Sin(i)));
         }
 
-        private bool IsColision(Rectangle rectangle) => 
+        private bool IsColision(Rectangle rectangle) =>
             rectangles.Any(r => r.IntersectsWith(rectangle));
 
         private static Size GetHalfSize(Size size) => new Size(size.Width / 2, size.Height / 2);

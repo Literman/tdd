@@ -15,9 +15,9 @@ namespace TagsCloudVisualization
 
             for (var i = 0; i < 1000; i++)
                 rectangles.Add(cloud.PutNextRectangle(
-                    new Size(rnd.Next(5,10), rnd.Next(5,10))));
+                    new Size(rnd.Next(10, 20), rnd.Next(10, 20))));
 
-            CloudDrawer.Draw("1.bmp",center, rectangles, 800, 800);
+            CircularCloudDrawer.Draw("1.bmp", center, rectangles, 800, 800);
         }
     }
 }

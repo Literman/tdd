@@ -54,8 +54,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="CircularCloudLayouter_Should.cs" />
-    <Compile Include="CloudDrawer.cs" />
+    <Compile Include="CircularCloudLayouterTests.cs" />
+    <Compile Include="CircularCloudDrawer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
