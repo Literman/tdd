@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -51,6 +52,27 @@ namespace TagsCloudVisualization
             actualRectangle.ShouldBeEquivalentTo(expectedRectangle);
         }
 
+        private static readonly object[] RectanglesCases =
+        {
+            new object[] {new[] {(1, 2), (3, 4)}, new Rectangle(1, -2, 3, 4)},
+            new object[] {new[] {(1, 2), (3, 4), (4, 2)}, new Rectangle(-4, -1, 4, 2)},
+            new object[] {new[] {(1, 2), (3, 4), (4, 2), (5, 7), (10, 15)}, new Rectangle(4, -7, 10, 15)},
+        };
+
+        [TestCaseSource(nameof(RectanglesCases))]
+        public void ReturnCorrectRectangle_AfterSeveralPutting((int x, int y)[] points, Rectangle expectedRectangle)
+        {
+            var actualRectangle = Rectangle.Empty;
+
+            foreach (var point in points)
+            {
+                actualRectangle = cloud.PutNextRectangle(new Size(point.x, point.y));
+                rectangles.Add(actualRectangle);
+            }
+            
+            actualRectangle.ShouldBeEquivalentTo(expectedRectangle);
+        }
+
         [TestCase(10, 10, 10, TestName = "10 rectangles")]
         [TestCase(100, 20, 10, TestName = "100 rectangles")]
         [TestCase(1000, 30, 10, TestName = "1000 rectangles"), Timeout(900)]
@@ -64,6 +86,34 @@ namespace TagsCloudVisualization
             for (var i = 0; i < count; i++)
                 for (var j = i + 1; j < count; j++)
                     rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
+        }
+
+        [TestCase(10, 10, 10, TestName = "10 rectangles")]
+        [TestCase(100, 20, 10, TestName = "100 rectangles")]
+        [TestCase(1000, 30, 10, TestName = "1000 rectangles"), Timeout(700)]
+        public void FormsCircle_WithRadius_LessThanExpected(int count, int width, int height)
+        {
+            var center = new Point(10, 10);
+            cloud = new CircularCloudLayouter(center);
+            var size = new Size(height, width);
+
+            var area = 0;
+            var cloudRadius = 0.0;
+            for (var i = 0; i < count; i++)
+            {
+                var rectangle = cloud.PutNextRectangle(size);
+                area += rectangle.Height * rectangle.Width;
+                cloudRadius = Math.Max(cloudRadius, GetDistance(center, rectangle.Location));
+            }
+            var circleRadius = 1.5 * Math.Sqrt(area / Math.PI);
+
+            cloudRadius.Should().BeLessThan(circleRadius);
+        }
+
+        private static double GetDistance(Point point1, Point point2)
+        {
+            var point = new Point(point1.X - point2.X, point1.Y - point2.Y);
+            return Math.Sqrt(point.X * point.X + point.Y * point.Y);
         }
 
         [TearDown]
